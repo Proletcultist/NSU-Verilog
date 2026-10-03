@@ -16,8 +16,8 @@ module basic_gates_tb;
        nand_y == e_nand_y && \
        nor_y == e_nor_y && \
        xnor_y == e_xnor_y \
-    ) \
-    else $error( \
+    ) $display("Passed test for a=%b, b=%b", a, b); \
+    else $fatal(1, \
         {"Assertion failed:\n", \
         "Inputs: a=%b, b=%b\n", \
         "Expected (not_a: %b, and_y: %b, or_y: %b, xor_y: %b, nand_y: %b, nor_y: %b, xnor_y: %b)\n", \
@@ -47,6 +47,8 @@ module basic_gates_tb;
       a = 1;
       b = 1;
       # 10 `CHECK(1'b0, 1'b1, 1'b1, 1'b0, 1'b0, 1'b0, 1'b1)
+
+      $display("PASSED ALL TESTS");
   end
 
 endmodule
