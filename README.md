@@ -1,2 +1,2 @@
-# NSU Intriduction to digital circuits course
+# NSU Introduction to digital circuits course
 
