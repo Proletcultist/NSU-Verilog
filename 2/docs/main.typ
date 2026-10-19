@@ -43,3 +43,14 @@ $ "shamt" = cases(
 ) $
 
 $ "SHW" = ceil.l log_2 W ceil.r $
+
+= Examples where carry and overflow differ
+
++ `0b11000000 + 0b11000000 = 0b10000000`
+  - If we interprete these numbers as signed ints, this equivalent to `(-64) + (-64) = -128`
+  - carry is $1$
+  - overflow is $0$, because negative + negative = negative, no overflow
++ `0b01000000 + 0b01000000 = 0b10000000`
+  - If we interprete these numbers as signed ints, this equivalent to `64 + 64 = -128`
+  - carry is $0$
+  - overflow is $1$, because positive + positive = negative, signed overflow occured
