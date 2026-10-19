@@ -22,18 +22,14 @@ module alu #(
     const logic [2:0] SLT_OP = 3'b111;
 
     always_comb begin
-        zero = (y == 0);
-        negative = y[W-1];
-        y = 0;
-        carry = 0;
-        overflow = 0;
-
         case (op)
             ADD_OP: begin
                 logic [W:0] res;
                 res = (W+1)'(a) + (W+1)'(b);
 
                 y = W'(res);
+                zero = (y == 0);
+                negative = y[W-1];
                 carry = res[W];
                 overflow = (a[W-1] == b[W-1] && a[W-1] != y[W-1]);
             end
@@ -44,34 +40,65 @@ module alu #(
                 res = (W+1)'(a) + (W+1)'(neg_b);
 
                 y = W'(res);
+                zero = (y == 0);
+                negative = y[W-1];
                 carry = res[W];
                 overflow = (a[W-1] == neg_b[W-1] && a[W-1] != y[W-1]);
             end
             AND_OP: begin
                 y = a & b;
+                zero = (y == 0);
+                negative = y[W-1];
+                carry = 0;
+                overflow = 0;
             end
             OR_OP: begin
                 y = a | b;
+                zero = (y == 0);
+                negative = y[W-1];
+                carry = 0;
+                overflow = 0;
             end
             XOR_OP: begin
                 y = a ^ b;
+                zero = (y == 0);
+                negative = y[W-1];
+                carry = 0;
+                overflow = 0;
             end
             SLL_OP: begin
                 logic [SHW:0] shamt;
                 shamt = b[SHW:0] % W;
 
                 y = a << shamt;
+                zero = (y == 0);
+                negative = y[W-1];
+                carry = 0;
+                overflow = 0;
             end
             SRL_OP: begin
                 logic [SHW:0] shamt;
                 shamt = b[SHW:0] % W;
 
                 y = a >> shamt;
+                zero = (y == 0);
+                negative = y[W-1];
+                carry = 0;
+                overflow = 0;
             end
             SLT_OP: begin
                 y = $signed(a) < $signed(b);
+                zero = (y == 0);
+                negative = y[W-1];
+                carry = 0;
+                overflow = 0;
             end
             default: begin
+                y = 0;
+                zero = (y == 0);
+                negative = y[W-1];
+                carry = 0;
+                overflow = 0;
             end
         endcase
     end
