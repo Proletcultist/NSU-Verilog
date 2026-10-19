@@ -38,8 +38,10 @@ module alu_tb #(
         // Min/max signed
         check_case({1'b0, {(W-1){1'b1}}}, 0);
         check_case({1'b0, {(W-1){1'b1}}}, 1);
+        check_case({1'b0, {(W-1){1'b1}}}, -1);
         check_case({1'b1, {(W-1){1'b0}}}, 0);
         check_case({1'b1, {(W-1){1'b0}}}, 1);
+        check_case({1'b1, {(W-1){1'b0}}}, -1);
         check_case({1'b1, {(W-1){1'b0}}}, {1'b0, {(W-1){1'b1}}});
 
         // Carry
