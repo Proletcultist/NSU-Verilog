@@ -1,6 +1,5 @@
 module alu_tb #(
-    parameter int W = 8,
-    parameter int SEED = 0
+    parameter int W = 8
 );
     const logic [2:0] ADD_OP = 3'b000;
     const logic [2:0] SUB_OP = 3'b001;
@@ -12,17 +11,18 @@ module alu_tb #(
     const logic [2:0] SLT_OP = 3'b111;
 
     logic [W-1:0] a, b, y;
-    logic [2:0]   op;
-    logic zero, negative, carry, overflowl;
+    logic [2:0] op;
+    logic zero, negative, carry, overflow;
 
     alu #(W) dut(a, b, op, y, zero, negative, carry, overflow);
 
-    task run_checks();
-        int seed;
-        seed = SEED;
-
+    task run_checks(int unsigned seed, int unsigned random_tests);
         if (W < 2 || W > 32) begin
             $fatal(1, "Unsupported alu_tb width: %d, allowed only values from 2 to 32", W);
+        end
+
+        for (int i = 0; i < random_tests; i++) begin
+            check_case((W)'($random(seed)), (W)'($random(seed)));
         end
 
         // Combinations of 0s and 1s
@@ -52,8 +52,6 @@ module alu_tb #(
         // Signed overflow
         check_case({1'b1, {(W-1){1'b0}}}, {1'b1, {(W-1){1'b0}}});
         check_case({1'b1, {(W-1){1'b0}}}, 1);
-
-        check_case((W)'($random(seed)), (W)'($random(seed)));
     endtask
 
     task check_case(
@@ -82,8 +80,8 @@ module alu_tb #(
             ADD_OP: begin
                 {e_carry, e_y} = i_a + i_b;
                 e_zero = (e_y == 0);
-                e_negative = e_y[W-1];
-                e_overflow = (i_a[W-1] == i_b[W-1] && i_a[W-1] != e_y[W-1]);
+                e_negative = $signed(e_y) < 0;
+                e_overflow = (($signed(i_a) < 0) == ($signed(i_b) < 0) && ($signed(i_a) < 0) != ($signed(e_y) < 0));
             end
             SUB_OP: begin
                 logic [W-1:0] neg_b;
@@ -91,28 +89,28 @@ module alu_tb #(
 
                 {e_carry, e_y} = i_a + neg_b;
                 e_zero = (e_y == 0);
-                e_negative = e_y[W-1];
-                e_overflow = (i_a[W-1] == neg_b[W-1] && i_a[W-1] != e_y[W-1]);
+                e_negative = $signed(e_y) < 0;
+                e_overflow = (($signed(i_a) < 0) == ($signed(neg_b) < 0) && ($signed(i_a) < 0) != ($signed(e_y) < 0));
             end
             AND_OP: begin
                 e_y = i_a & i_b;
                 e_carry = 0;
                 e_zero = (e_y == 0);
-                e_negative = e_y[W-1];
+                e_negative = $signed(e_y) < 0;
                 e_overflow = 0;
             end
             OR_OP: begin
                 e_y = i_a | i_b;
                 e_carry = 0;
                 e_zero = (e_y == 0);
-                e_negative = e_y[W-1];
+                e_negative = $signed(e_y) < 0;
                 e_overflow = 0;
             end
             XOR_OP: begin
                 e_y = i_a ^ i_b;
                 e_carry = 0;
                 e_zero = (e_y == 0);
-                e_negative = e_y[W-1];
+                e_negative = $signed(e_y) < 0;
                 e_overflow = 0;
             end
             SLL_OP: begin
@@ -122,7 +120,7 @@ module alu_tb #(
                 e_y = i_a << shamt;
                 e_carry = 0;
                 e_zero = (e_y == 0);
-                e_negative = e_y[W-1];
+                e_negative = $signed(e_y) < 0;
                 e_overflow = 0;
             end
             SRL_OP: begin
@@ -132,14 +130,14 @@ module alu_tb #(
                 e_y = i_a >> shamt;
                 e_carry = 0;
                 e_zero = (e_y == 0);
-                e_negative = e_y[W-1];
+                e_negative = $signed(e_y) < 0;
                 e_overflow = 0;
             end
             SLT_OP: begin
                 e_y = $signed(i_a) < $signed(i_b);
                 e_carry = 0;
                 e_zero = (e_y == 0);
-                e_negative = e_y[W-1];
+                e_negative = $signed(e_y) < 0;
                 e_overflow = 0;
             end
         endcase
@@ -148,19 +146,19 @@ module alu_tb #(
         b = i_b;
         op = i_op;
 
-        # 20 assert(
+        # 10 assert(
             e_y == y &&
             e_zero == zero &&
             e_negative == negative &&
             e_carry == carry &&
             e_overflow == overflow
-        ) $display("ALU with width %d passsed test for a=%d, b=%d, op=%b", W, i_a, i_b, i_op);
+        ) $display("ALU with width %d passsed test for a=%d, b=%d, op=%b", W, $signed(i_a), $signed(i_b), i_op);
         else $fatal(1,
             {"Assertion form ALU with width %d faled:\n",
             "Inputs: a=%d, b=%d, op=%b\n",
             "Expected: y=%d, zero=%b, negative=%b, carry=%b, overflow=%b\n",
             "Got:      y=%d, zero=%b, negative=%b, carry=%b, overflow=%b"},
-            W, i_a, i_b, i_op, 
+            W, $signed(i_a), $signed(i_b), i_op, 
             e_y, e_zero, e_negative, e_carry, e_overflow,
             y, zero, negative, carry, overflow
         );
