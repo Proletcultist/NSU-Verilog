@@ -1,0 +1,11 @@
+read_verilog -sv rtl/alu.sv
+
+hierarchy -top alu -chparam W 8
+
+proc; opt; memory; opt; techmap; opt
+
+abc -lut 4
+
+stat
+
+ltp
