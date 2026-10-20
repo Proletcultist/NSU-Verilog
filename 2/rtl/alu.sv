@@ -67,8 +67,8 @@ module alu #(
                 overflow = 0;
             end
             SLL_OP: begin
-                logic [SHW:0] shamt;
-                shamt = b[SHW:0] % W;
+                logic [SHW-1:0] shamt;
+                shamt = b[SHW-1:0] % W;
 
                 y = a << shamt;
                 zero = (y == 0);
@@ -77,8 +77,8 @@ module alu #(
                 overflow = 0;
             end
             SRL_OP: begin
-                logic [SHW:0] shamt;
-                shamt = b[SHW:0] % W;
+                logic [SHW-1:0] shamt;
+                shamt = b[SHW-1:0] % W;
 
                 y = a >> shamt;
                 zero = (y == 0);
