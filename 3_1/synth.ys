@@ -1,0 +1,5 @@
+read_verilog -sv rtl/timer_pwm.sv
+
+proc; opt; memory; opt; techmap; opt
+
+stat
