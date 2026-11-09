@@ -25,7 +25,7 @@ module timer_pwm #(
         if (!enable || rst) begin
             cnt <= 'b0;
             tick <= 1'b0;
-        end else if (cnt == period_eff - 1'b1) begin
+        end else if (cnt >= period_eff - 1'b1) begin
             cnt <= 'b0;
             tick <= 1'b1;
         end else begin
