@@ -70,7 +70,7 @@ module timer_pwm_tb #(
         period_test('d5, 'd0, 1);
         period_test('d128, 'd0, 1);
 
-        period_test('d5, 'd1, 1);
+        period_test('d5, 'd0, 1);
         period_test('d5, 'd1, 1);
         period_test('d5, 'd4, 1);
         period_test('d5, 'd5, 1);
